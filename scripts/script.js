@@ -8,9 +8,11 @@ window.onload = function () {
     const end = document.getElementById("end");
     const status = document.getElementById("status"); //this element shows the game status if you win or lose
     const boundaries = document.querySelectorAll(".boundary"); // the walls in the maze (.boundary cz we use it for the class)
-    const gameArea = document.getElementById("game")
+    const gameArea = document.getElementById("game");
 
     let playing = false;
+    let hasWon = false;
+    let hasLost = false;
 
 
     console.log(start);
@@ -20,19 +22,22 @@ window.onload = function () {
 
     function startgame(){
         playing = true; // to set the game has started
+        hasWon = false;
+        hasLost = false;
         status.textContent = "Game in progress..." // updates the status text
-        console.log("game start");
+        console.log("The Game has started");
+
+        resetBoundaries(boundaries);  // Remove highlights from boundaries
     }
 
     function loseGame(){
-        if (playing) { // if true 
+        if (playing && !hasWon) { // if true and !flase
             playing = false;
+            hasLost = true;
             status.textContent = "You Lost! Try Again :( "
-            console.log("Lost the game");
+            console.log("Game Over");
     
-            boundaries.forEach(boundary => {
-                boundary.classList.add("highlighted")  // this changes the class for boundaries to change the bk-color
-            });
+            highlightBoundaries(boundaries); // add highlight class
 
             setTimeout(resetGame, 2000);  // to reset the game
         }
@@ -40,20 +45,21 @@ window.onload = function () {
 
 
     function resetGame(){
-        status.textContent = "Move your mouse over the 'S' ";
-        console.log("Again")
+        if (hasLost){
+            status.textContent = "Move your mouse over the 'S' ";
+        console.log("Resetting the game");
 
-        //we need to remove the highlights again
-        boundaries.forEach(boundary => {
-            boundary.classList.remove("highlighted")  // this changes the class for boundaries to change the bk-color
-        });
-    
+        resetBoundaries(boundaries);    //call the fun from myTools
+        }
     }
 
-
     function winGame(){
-        status.textContent = "Congratulation You Won !!"
-        console.log("end game");
+        if (playing) {
+            hasWon = true;  // to ensure if the player won and have exit the gaming area, the boundaries doesnt get highlighted
+            status.textContent = "Congratulation You Won !!"
+            console.log("Congrats won the game");
+            playing =  false;
+        }
     }
 
     start.addEventListener("mouseover", startgame);
